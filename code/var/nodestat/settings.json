@@ -1,0 +1,23 @@
+{
+    "db": {
+        "port": 27017,
+        "host": "localhost",
+        "username":"",
+        "password":"",
+        "dbname":"statsdb",
+        "collectionname":"stats"
+    },
+    "server": {
+        "port": 3000,
+        "address": "127.0.0.1"
+    },
+    "accessControl": {
+        "allowOrigin": "*",
+        "allowMethods": "valid methods GET,POST,PUT,DELETE,HEAD,OPTIONS, configured methods",
+        "allowMethods": "GET,POST"
+    },
+    "validator":{
+        "locations":["san mateo","salinas", "fresno", "total"]
+    },
+    "debug": true
+}

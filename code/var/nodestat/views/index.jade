@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+  
+    h2 REST API definition
+    p <b>GET /index</b> -  this page
+    
+    p <b>GET /data?query={JSON format below}&[limit=&sort=&fields=&skip=&hint=&explain=&snapshot=&timeout=]</b> -  gets data
+
+    p example?query={"location":"fresno"}
+    p the following parameters can be submtted in query
+    
+    pre  query{
+                'bundle':'finance',
+                'metrics': 'billed_program',
+                'location': {['san mateo', 'salinas'],
+                'from': 'date stamp in YYYYMMDD format inclusive'],
+                'to': 'date stamp in YYYYMMDD format inclusive']}
+                
+    p <b>POST /data/key [data]</b> -  store data
+    pre 
+        'bundle':i.e. 'finance',
+        'metrics': i.e. 'billed_program' etc,
+        'location': 'san mateo',
+        'datestamp': 'date stamp in YYYYMMDD format '],
+        'value': value point
+        'details': meta data you desire 
+
+    
+    p.
+    
+    pre <b>SYSTEM CONFIG:</b> #{configuration}
