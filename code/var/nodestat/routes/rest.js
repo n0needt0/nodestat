@@ -10,6 +10,8 @@ var mongo = require("mongodb"),
     BSON = mongo.BSONPure,
     _ = require('underscore')._;
 
+var debug = settings.debug;
+
 /**
  * REST Methods
  */
@@ -37,7 +39,7 @@ app.get('/data', function(req, res, next){
       } 
     }   
         
-    console.log('Searching query:' + query + " options: " + options);
+    debug('Searching query:' + query + " options: " + options);
     
     db.collection(config.db.collectionname, function(err, collection) {
         collection.find(query, options).toArray(function(err, items){
@@ -52,14 +54,14 @@ app.get('/data', function(req, res, next){
  */
 app.delete('/data/:id', function(req, res) {
     var id = req.params.id;
-    console.log('Deleting id: ' + id);
+    debug('Deleting id: ' + id);
     db.collection(config.db.collectionname, function(err, collection) {
             collection.remove({'_id':new BSON.ObjectID(id)}, {safe:true}, function(err, result) {
                 if (err) {
                     res.header('Content-Type', 'application/json');
                     res.send({'error':'An error has occurred - ' + err});
                 } else {
-                    console.log('' + result + ' document(s) deleted');
+                    debug('' + result + ' document(s) deleted');
                     res.header('Content-Type', 'application/json');
                     res.send(req.body);
                 }
@@ -82,75 +84,83 @@ app.put('/data/:id', function(req, res) {
 });
 
 /**
- * Insert
+ * Insert/Update
  */
 app.post('/data', function(req, res) {
-    var item = req.body;
-        
-    /**check for required and limits
-     * required{
-     * bundle
-     * metrics
-     * location
-     * datestamp
-     * value
-     */
     
-    var required = ['bundle','metrics','location','datestamp','value'];
-    
-    var errcheck = [];
-    
-    _.each(required, function(v,k){
-        if( !_.has(item, v) && item.v !== '' ) {
-            errcheck.push({'error': v + ' parameter required'});
-        } 
-    });
-    
-    if(!_.isEmpty(errcheck))
-    {
-        console.log(JSON.stringify(errcheck));
-        res.header('Content-Type', 'application/json');
-        res.send(errcheck);
-        return;
-    }
-    
-    //makesure date stamp is valid
-    var pattern=new RegExp("[1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]");
-    if(!pattern.test(item.datestamp)){
-        errcheck.push({'error': ' datestamp parameter must be YYYYMMDD!'})
-        console.log(JSON.stringify(errcheck));
-        res.header('Content-Type', 'application/json');
-        res.send(errcheck);
-        return;
-    }
-    
-    //make sure locations are valid
-    item.location = item.location.toLowerCase();
-    
-    if(!_.isEmpty(config.validator) && !_.isEmpty(config.validator.locations))
-    {
-         if( _.indexOf(config.validator.locations, item.location) < 0 ) {
-             errcheck.push({'error': ' invald location! valid locations: ' + config.validator.locations });
-             console.log(JSON.stringify(errcheck));
-             res.header('Content-Type', 'application/json');
-             res.send(errcheck);
-             return;
-         } 
-    }
-    
-    console.log('Adding item: ' + JSON.stringify(item));
-    
-    db.collection(config.db.collectionname, function(err, collection) {
-        
-        collection.insert(item, {safe:true}, function(err, result) {
-            if (err) {
+    try{
+            var item = req.body;
+                
+            /**check for required and limits
+             * required{
+             * bundle
+             * metrics
+             * location
+             * datestamp
+             * value
+             */
+            
+            var required = ['bundle','metrics','location','datestamp','value'];
+            
+            var errcheck = [];
+            
+            _.each(required, function(v,k){
+                if( !_.has(item, v) && item.v !== '' ) {
+                    errcheck.push({'error': v + ' parameter required'});
+                } 
+            });
+            
+            if(!_.isEmpty(errcheck))
+            {
+                debug(JSON.stringify(errcheck));
                 res.header('Content-Type', 'application/json');
-                res.send({'error':'An error has occurred'});
-            } else {
-                console.log('Success: ' + JSON.stringify(result[0]));
-                res.header('Content-Type', 'application/json');
-                res.send(result[0]);
+                res.send(errcheck);
+                return;
             }
-        });
-    });
+            
+            //makesure date stamp is valid
+            var pattern=new RegExp("[1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]");
+            if(!pattern.test(item.datestamp)){
+                errcheck.push({'error': ' datestamp parameter must be YYYYMMDD!'})
+                debug(JSON.stringify(errcheck));
+                res.header('Content-Type', 'application/json');
+                res.send(errcheck);
+                return;
+            }
+            
+            //make sure locations are valid
+            item.location = item.location.toLowerCase();
+            
+            if(!_.isEmpty(config.validator) && !_.isEmpty(config.validator.locations))
+            {
+                 if( _.indexOf(config.validator.locations, item.location) < 0 ) {
+                     errcheck.push({'error': ' invalid location! valid locations: ' + config.validator.locations });
+                     debug(JSON.stringify(errcheck));
+                     res.header('Content-Type', 'application/json');
+                     res.send(errcheck);
+                     return;
+                 } 
+            }
+            
+            debug('Adding item: ' + JSON.stringify(item));
+            
+            db.collection(config.db.collectionname, function(err, collection) {
+                
+                var key = {'bundle':item.bundle,'metrics':item.metrics,'location':item.location,'datestamp':item.datestamp}
+                
+                collection.update(key, item, {upsert:true, safe:false }, function(err, result) {
+                    if (err) {
+                        debug(err);
+                        res.header('Content-Type', 'application/json');
+                        res.send('{"ok":0}');
+                    } else {
+                        debug('Success!');
+                        res.header('Content-Type', 'application/json');
+                        res.send('{"ok":1}');
+                    }
+                });
+            });
+    }catch(e){
+        debug(e);
+    }
 });

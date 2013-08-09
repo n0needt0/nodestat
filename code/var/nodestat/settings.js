@@ -3,7 +3,8 @@
  */
 
 var         fs = require("fs")
-     , mongo = require('mongodb');
+     , mongo = require('mongodb')
+     , assert = require('assert');
 
 var  Server = mongo.Server,
              Db = mongo.Db,
@@ -27,6 +28,7 @@ var db = new Db(config.db.dbname, server);
 // Open your mongodb database and create collection if does not exists.
 try{
     db.open(function (error, connection) {
+
             if (error) {
                 console.log("Cannot connect to " +  JSON.stringify(config.db, null, 4) + " database : " + error);
             }
@@ -35,6 +37,9 @@ try{
                if (error) {
                    console.log("Cannot connect to " +  JSON.stringify(config.db, null, 4) + " collection: " + error);
                }
+               
+               collection.ensureIndex( { "bundle": 1, "metrics": 1, "location":1, "datestamp": 1 }, {unique: true, dropDups:true} );
+           
            });
          });
 }catch(e){
@@ -43,3 +48,11 @@ try{
 
 //this is global connection
 exports.db = db;
+
+var debug = function(msg){
+    if(config.debug){
+        console.log(msg);
+    }
+}
+
+exports.debug = debug;
