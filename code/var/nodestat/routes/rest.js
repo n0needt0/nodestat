@@ -121,7 +121,7 @@ app.post('/data', function(req, res) {
             //makesure date stamp is valid
             var pattern=new RegExp("[1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]");
             if(!pattern.test(item.datestamp)){
-                errcheck.push({'error': ' datestamp parameter must be YYYYMMDD!'})
+                errcheck.push({'error': 'datestamp parameter must be YYYYMMDD!'})
                 debug(JSON.stringify(errcheck));
                 res.header('Content-Type', 'application/json');
                 res.send(errcheck);

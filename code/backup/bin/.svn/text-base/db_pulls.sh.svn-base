@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#copy ptrac db to local db, this guy uns in andrew account for now
+
+for f in $( ssh andrew@ptrac.helppain.net "ls -tr /var/backup/db/ptrac | tail -n 1" );
+do  scp andrew@ptrac.helppain.net:/var/backup/db/ptrac/$f ~/;
+done
+
+mysqldump -u root -pl1n0d3 --add-drop-table --no-data ptrac | grep ^DROP | mysql -u root -pl1n0d3 ptrac
+
+mysql -u root -pl1n0d3 ptrac  < $f
+
+rm $f
+
+#copy billtrac db to local db, this guy uns in andrew account for now
+
+for f in $( ssh andrew@billtrac.helppain.net "ls -tr /var/backup/db/billtrac | tail -n 1" );
+do  scp andrew@billtrac.helppain.net:/var/backup/db/billtrac/$f ~/;
+done
+
+mysqldump -u root -pl1n0d3 --add-drop-table --no-data billtrac | grep ^DROP | mysql -u root -pl1n0d3 billtrac
+
+mysql -u root -pl1n0d3 billtrac  < $f
+
+rm $f

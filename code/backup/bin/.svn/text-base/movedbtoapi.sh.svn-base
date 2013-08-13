@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mysqldump -v -udashboard -pdashboard#1 --opt --compress dashboard affiliates locations locations_affiliates | ssh root@api.helppain.net mysql -udashboard -pdashboard#1 dashboard
+
+echo  "DB to Api Moved:" | mail -s "DB to API moved" ayasinsky@helppain.net
