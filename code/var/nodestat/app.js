@@ -11,7 +11,10 @@ var express = require('express')
   , fs = require("fs")
   , settings = require('./settings')
   , portscanner = require('portscanner')
-  , toobusy = require('toobusy').maxLag(100);
+  , toobusy = require('toobusy').maxLag(100)
+  , cluster = require('cluster');
+
+var numCPUs = require('os').cpus().length;
 
 var config = settings.config;
 
@@ -48,7 +51,7 @@ app.set('address', config.server.address || '0.0.0.0');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
-app.use(express.logger({stream: logFile}));
+app.use(express.logger({format: 'default', stream: logFile}));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
@@ -74,7 +77,19 @@ app.get('/dictionary', routes.dictionary);
 //this is REST interface
 require('./routes/rest');
 
-    http.createServer(app).listen(port, app.get('address'), function(){
-      console.log('Express server listening on ' + app.get('address') + ':' + port);
-    });
+if (cluster.isMaster) {
+    // Fork workers.
+    for (var i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
 
+    cluster.on('exit', function(worker, code, signal) {
+      console.log('worker ' + worker.process.pid + ' died');
+    });
+  } else {
+    // Workers can share any TCP connection
+    // In this case its a HTTP server
+      http.createServer(app).listen(port, app.get('address'), function(){
+          console.log('Express server listening on ' + app.get('address') + ':' + port);
+        });
+  }
