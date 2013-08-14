@@ -17,6 +17,60 @@ var debug = settings.debug;
  */
 
 /**
+ * Health check
+ */
+
+app.get('/health', function(req, res, next){
+    
+    var token = new Date().getTime();
+    var item = {'token':token};
+    var error = '';
+    
+    
+    
+    db.collection('health', function(err, collection) {
+    
+        collection.insert(item, {safe: true}, function(err, insert_result){
+            if(err){
+                error = err
+                debug(err)
+            }
+            
+            debug("test added as "+insert_result[0]._id);
+          
+           collection.findOne({'_id':new BSON.ObjectID(insert_result[0]._id.toString())},function(err, find_result){
+               
+               
+               if(err){
+                   error = err
+                   debug(err)
+               }
+               
+               debug('found' + JSON.stringify(find_result))
+                        
+                        
+               collection.remove({'_id':new BSON.ObjectID(find_result._id.toString())}, {safe:true}, function(err, delete_result) {
+               if (err) {
+                   error = err;
+               }
+               debug('deleted ' + delete_result)
+               });
+          });
+     });
+
+     if('' == error){
+         res.header('Content-Type', 'application/json');
+         res.send('{"ok":1}');
+     }
+       else
+     {
+        res.header('Content-Type', 'application/json');
+        res.send('{"ok":0}');
+     }
+   });
+});
+
+/**
  *  Search
  */
 
@@ -63,11 +117,11 @@ app.delete('/data/:id', function(req, res) {
                 } else {
                     debug('' + result + ' document(s) deleted');
                     res.header('Content-Type', 'application/json');
-                    res.send(req.body);
+                    res.send('{"ok":1}');
                 }
             });
         });
-    });
+});
 
 /**
  * Update

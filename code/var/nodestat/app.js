@@ -10,6 +10,7 @@ var express = require('express')
   , path = require('path')
   , fs = require("fs")
   , settings = require('./settings')
+  , portscanner = require('portscanner')
   , toobusy = require('toobusy').maxLag(100);
 
 var config = settings.config;
@@ -17,6 +18,18 @@ var config = settings.config;
 console.log(config);
 
 var app = exports.app = express();
+
+
+if(undefined === process.argv[2])
+{
+    var port = config.server.port || 3000;
+}
+ else
+{
+     var port = process.argv[2];
+}
+
+var logFile = fs.createWriteStream(config.logger.logfile + ':' + port + '.log', {flags: 'w'}); //use {flags: 'w'} to open in write mode
 
 // all environments
 var toobusy = require('toobusy');
@@ -29,12 +42,13 @@ app.use(function(req, res, next) {
   }
 });
 
-app.set('port', config.server.port || 3000);
+app.set('port', port);
 app.set('address', config.server.address || '0.0.0.0');
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
-app.use(express.logger('dev'));
+app.use(express.logger({stream: logFile}));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
@@ -60,6 +74,7 @@ app.get('/dictionary', routes.dictionary);
 //this is REST interface
 require('./routes/rest');
 
-http.createServer(app).listen(app.get('port'), app.get('address'), function(){
-  console.log('Express server listening on ' + app.get('address') + ':' + app.get('port'));
-});
+    http.createServer(app).listen(port, app.get('address'), function(){
+      console.log('Express server listening on ' + app.get('address') + ':' + port);
+    });
+

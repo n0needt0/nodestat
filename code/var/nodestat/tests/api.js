@@ -11,6 +11,8 @@ var validdata ={
         "details":{"some":"data"}
     };
 
+var id = '';
+
 exports['api'] = nodeunit.testCase({
     
     
@@ -18,7 +20,7 @@ exports['api'] = nodeunit.testCase({
         test.expect(1);
         
         request({
-                         uri: "http://localhost:3000/data",
+                         uri: "http://stats.this.com/data",
                  method: "POST",
                       form: validdata
                    },
@@ -30,32 +32,6 @@ exports['api'] = nodeunit.testCase({
   
        
     },
-        
-        'get valid data' : function(test){
-            test.expect(1);
-            var searchdata = JSON.parse(JSON.stringify(validdata));
-            delete searchdata.value;
-            delete searchdata.details;
-            
-            console.log("http://localhost:3000/data?query=" + JSON.stringify(searchdata));
-            
-            request({
-                             uri: "http://localhost:3000/data?query=" + JSON.stringify(searchdata),
-                     method: "GET"
-                       },
-                       function(error, response, body) {
-                           res = JSON.parse(body)[0];
-                           delete res._id
-                           delete res.value
-                           delete res.details
-                           test.equal(JSON.stringify(res), JSON.stringify(searchdata));
-                           test.done();
-                      });
-            
-      
-           
-        },
-
     
     'insert missing location': function(test){
         test.expect(1);
@@ -64,7 +40,7 @@ exports['api'] = nodeunit.testCase({
         delete invaliddata.location;
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -75,7 +51,6 @@ exports['api'] = nodeunit.testCase({
                    });
     },
     
-
     'insert bad location': function(test){
         test.expect(1);
         
@@ -83,7 +58,7 @@ exports['api'] = nodeunit.testCase({
         invaliddata.location = 'invalid location';
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -101,7 +76,7 @@ exports['api'] = nodeunit.testCase({
         delete invaliddata.bundle;
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -119,7 +94,7 @@ exports['api'] = nodeunit.testCase({
         delete invaliddata.metrics;
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -137,7 +112,7 @@ exports['api'] = nodeunit.testCase({
         delete invaliddata.value;
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -155,7 +130,7 @@ exports['api'] = nodeunit.testCase({
         delete invaliddata.datestamp;
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -172,7 +147,7 @@ exports['api'] = nodeunit.testCase({
         invaliddata.datestamp = '20131344';
         
         request({
-                    uri: "http://localhost:3000/data",
+                    uri: "http://stats.this.com/data",
              method: "POST",
                  form: invaliddata
                 },
@@ -182,4 +157,49 @@ exports['api'] = nodeunit.testCase({
                        test.done();
                    });
     },
+    
+    'get valid data' : function(test){
+        test.expect(1);
+        var searchdata = JSON.parse(JSON.stringify(validdata));
+        delete searchdata.value;
+        delete searchdata.details;
+        
+        request({
+                         uri: "http://stats.this.com/data?query=" + JSON.stringify(searchdata),
+                 method: "GET"
+                   },
+                   function(error, response, body) {
+                       res = JSON.parse(body)[0];
+                       id = res._id
+                       delete res._id
+                       delete res.value
+                       delete res.details
+                       test.equal(JSON.stringify(res), JSON.stringify(searchdata));
+                       test.done();
+                  });
+        
+  
+       
+    },
+
+    'delete data' : function(test){
+
+        test.expect(1);
+        var searchdata = JSON.parse(JSON.stringify(validdata));
+        delete searchdata.value;
+        delete searchdata.details;
+        
+        request({
+                         uri: "http://stats.this.com/data/" + id,
+                 method: "DELETE"
+                   },
+                   function(error, response, body) {
+                       test.equal(body, '{"ok":1}');
+                       test.done();
+                  });
+        
+  
+       
+    },
+
 });

@@ -15,9 +15,15 @@ mkdir -p $dirdb;
 #zipt site
 zip -r $dirapp/$d-%APPLICATION%.zip /var/%APPLICATION%
 #dump db
-mongodump --host localhost --port 27017 --db=statsdb --out = $dirdb/$d-%APPLICATION%.mongo/
 
-for f in $( ls -t $dirdb/*.mongo | tail -n +5 ); do  rm $f; done
+rm -rf $dirdb/dump/*;
+
+mongodump --host localhost --port 27017 --db=statsdb --out = $dirdb/dump
+
+zip -9 -r $dirdb/$d-%APPLICATION%.mongo.zip $dirdb/dump
+
+
+for f in $( ls -t $dirdb/*.mongo.zip | tail -n +5 ); do  rm $f; done
 for f in $( ls -t $dirapp/*.zip | tail -n +5 ); do  rm $f; done
 
 #bkd1
@@ -81,7 +87,7 @@ fi
 
 
 #remove all but last 20 backups
-for f in $( ssh root@$server "ls -t $dirdb/*.sql | tail -n +5" );
+for f in $( ssh root@$server "ls -t $dirdb/*.mongo.zip | tail -n +5" );
     do ssh root@$server "rm $f";
 done
 
