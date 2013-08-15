@@ -13,6 +13,7 @@ var  Server = mongo.Server,
 //try to load config
 
 try {
+
           config = JSON.parse(fs.readFileSync(process.cwd()+"/settings.json"));
       } catch(e) {
         // ignore
