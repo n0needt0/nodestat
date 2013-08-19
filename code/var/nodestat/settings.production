@@ -1,0 +1,26 @@
+{
+    "db": {
+        "port": 27017,
+        "host": "mongo.helppain.net",
+        "username":"",
+        "password":"",
+        "dbname":"statsdb",
+        "collectionname":"stats"
+    },
+    "server": {
+        "port": 3000,
+        "address": "127.0.0.1"
+    },
+    "accessControl": {
+        "allowOrigin": "*",
+        "allowMethods": "valid methods GET,POST,PUT,DELETE,HEAD,OPTIONS, configured methods",
+        "allowMethods": "GET,POST"
+    },
+    "logger":{
+        "logfile":"/var/log/node/nodestat"
+    },
+    "validator":{
+        "locations":["san mateo","salinas", "fresno", "total"]
+    },
+    "debug": true
+}

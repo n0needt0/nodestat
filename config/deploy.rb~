@@ -147,10 +147,5 @@ after 'deploy', 'deploy:remove_old'
 #change permission to www-data user
 after 'deploy', 'deploy:chown_to_www_data'
 
-after 'deploy', 'deploy:get_correct_upstart'
-after 'deploy', 'deploy:get_correct_monit'
-
-#restart app
-after 'deploy', 'deploy:reload_node'
-after 'deploy', 'deploy:reload_monit'
+#restart apache
 after 'deploy', 'deploy:reload_nginx'

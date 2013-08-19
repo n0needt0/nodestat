@@ -1,0 +1,10 @@
+#!monit
+set logfile /var/log/monit.log
+
+check process nodestat with pidfile "/var/run/nodestat.pid"
+    start program = "/sbin/start nodestat"
+    stop program  = "/sbin/stop nodestat"
+    if failed port 3000 protocol HTTP
+        request /health
+        with timeout 10 seconds
+        then restart
