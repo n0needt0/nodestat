@@ -1,0 +1,1 @@
+server "nodestat.helppain.net", :web, :app
