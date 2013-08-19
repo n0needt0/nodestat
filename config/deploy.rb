@@ -111,17 +111,17 @@ namespace :deploy do
 
   desc "get correct monit"
    task :get_correct_monit_conf do
-   sudo "mv #{deploy_to}/current/code/etc/monit/conf.d/monit.#{stage} /etc/monit/conf.d/nodestat"
+   sudo "mv #{deploy_to}/current/code/etc/monit/conf.d/nodestat.#{stage} /etc/monit/conf.d/nodestat"
   end
 
   desc "Reload Monit"
    task :reload_monit do
-   sudo "/etc/init.d/monit reload"
+   sudo "/etc/init.d/monit restart"
   end
 
   desc "Start Node"
    task :reload_node do
-   sudo "start nodestart"
+   sudo "start nodestat"
   end
 
 
@@ -147,8 +147,8 @@ after 'deploy', 'deploy:remove_old'
 #change permission to www-data user
 after 'deploy', 'deploy:chown_to_www_data'
 
-after 'deploy', 'deploy:get_correct_upstart'
-after 'deploy', 'deploy:get_correct_monit'
+after 'deploy', 'deploy:get_correct_upstart_conf'
+after 'deploy', 'deploy:get_correct_monit_conf'
 
 #restart app
 after 'deploy', 'deploy:reload_node'
