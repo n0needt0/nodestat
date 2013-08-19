@@ -14,7 +14,7 @@ var  Server = mongo.Server,
 
 try {
 
-          config = JSON.parse(fs.readFileSync(process.cwd()+"/settings.json"));
+          config = JSON.parse(fs.readFileSync(__dirname+"/settings.json"));
       } catch(e) {
         // ignore
          console.log("Error: Can not parse config!");
@@ -23,8 +23,7 @@ try {
 
 exports.config = config;
 
-var server = new Server(config.db.host, config.db.port, {auto_reconnect: true});
-var db = new Db(config.db.dbname, server);
+var db = new Db(config.db.dbname, new Server(config.db.host, config.db.port, {auto_reconnect: true}), {safe:false});
 
 // Open your mongodb database and create collection if does not exists.
 try{

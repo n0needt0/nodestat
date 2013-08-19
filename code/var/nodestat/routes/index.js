@@ -2,7 +2,7 @@
  * GET home page.
  */
 
-var settings = require(process.cwd()+"/settings");
+var settings = require(__dirname+"/../settings");
 var config = settings.config;
 
 exports.index = function(req, res){

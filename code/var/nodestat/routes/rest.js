@@ -1,7 +1,7 @@
 var check = require('validator').check,
     sanitize = require('validator').sanitize;
     
-var settings = require(process.cwd()+"/settings");
+var settings = require(__dirname+"/../settings");
 var config = settings.config;
 var db = settings.db;
 

@@ -4,12 +4,12 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
+  , routes = require(__dirname + '/routes')
   , http = require('http')
   , mongo = require('mongodb')
   , path = require('path')
   , fs = require("fs")
-  , settings = require('./settings')
+  , settings = require(__dirname + '/settings')
   , portscanner = require('portscanner')
   , toobusy = require('toobusy').maxLag(100)
   , cluster = require('cluster');
