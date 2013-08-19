@@ -5,7 +5,7 @@ set :use_sudo, true
 
 set :keep_releases, 2
 
-set :application_name, "help"
+set :application_name, "nodestat"
 
 set :user, Capistrano::CLI.ui.ask("User for deploy:")
 set :password, Capistrano::CLI.ui.ask("Password for user #{user}:"){|q|q.echo = false}
@@ -77,7 +77,7 @@ namespace :deploy do
 
   desc "Write current revision to "
   task :publish_revision do
-  run "content=`cat #{deploy_to}/current/REVISION`;ip=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`; sed -i \"s/MY_REVISION/$content-$ip/g\" #{deploy_to}/current/nodestat/code/var/nodestat/views/index.jade"
+  run "content=`cat #{deploy_to}/current/REVISION`;ip=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`; sed -i \"s/MY_REVISION/$content-$ip/g\" #{deploy_to}/current/code/var/nodestat/views/index.jade"
   end
   
   desc "clean up old releases"
@@ -87,18 +87,18 @@ namespace :deploy do
   
   desc "get correct config"
   task :get_correct_config do
-    run "mv #{deploy_to}/current/nodestat/code/var/nodestat/settings.#{stage}.php #{deploy_to}/current/nodestat/code/var/nodestats/settings.json"
+    run "mv #{deploy_to}/current/code/var/nodestat/settings.#{stage} #{deploy_to}/current/code/var/nodestat/settings.json"
   end
   
   desc "get correct nginx"
    task :get_correct_nginx_conf do
-   sudo "mv #{deploy_to}/current/nodestat/code/etc/nginx/sites-enabled/#{application_name}.#{stage} /etc/nginx/sites-enabled/#{application_name}"
+   sudo "mv #{deploy_to}/current/code/etc/nginx/sites-enabled/#{application_name}.#{stage} /etc/nginx/sites-enabled/#{application_name}"
   end
 
   desc "Reload Nginx"
   task :reload_nginx do
     unless remote_file_exists?(web_root)
-      sudo "ln -sf #{deploy_to}/current/nodestat/code/var/nodestat #{web_root}"
+      sudo "ln -sf #{deploy_to}/current/code/var/nodestat #{web_root}"
     end
     
     sudo "/etc/init.d/nginx reload"
@@ -106,12 +106,12 @@ namespace :deploy do
 
   desc "get correct upstart"
    task :get_correct_upstart_conf do
-   sudo "mv #{deploy_to}/current/nodestat/code/etc/init/nodestat.#{stage} /etc/init/nodestat.conf"
+   sudo "mv #{deploy_to}/current/code/etc/init/nodestat.#{stage} /etc/init/nodestat.conf"
   end
 
   desc "get correct monit"
    task :get_correct_monit_conf do
-   sudo "mv #{deploy_to}/current/nodestat/code/etc/monit/conf.d/monit.#{stage} /etc/monit/conf.d/nodestat"
+   sudo "mv #{deploy_to}/current/code/etc/monit/conf.d/monit.#{stage} /etc/monit/conf.d/nodestat"
   end
 
   desc "Reload Monit"
