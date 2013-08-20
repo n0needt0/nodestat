@@ -17,7 +17,7 @@ var debug = settings.debug;
 
 var numCPUs = require('os').cpus().length;
 
-debug("running on " +numCPUs + " CPU(s)")
+debug("running on " + numCPUs + " CPU(s)")
 
 var config = settings.config;
 
