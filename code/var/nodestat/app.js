@@ -10,7 +10,7 @@ var express = require('express')
   , path = require('path')
   , fs = require("fs")
   , settings = require(__dirname + '/settings')
-  , toobusy = require('toobusy').maxLag(100)
+  //, toobusy = require('toobusy').maxLag(100)
   , cluster = require('cluster');
 
 var numCPUs = require('os').cpus().length;
@@ -34,6 +34,7 @@ if(undefined === process.argv[2])
 var logFile = fs.createWriteStream(config.logger.logfile + ':' + port + '.log', {flags: 'w'}); //use {flags: 'w'} to open in write mode
 
 // all environments
+/**
 var toobusy = require('toobusy');
 
 app.use(function(req, res, next) {
@@ -43,6 +44,7 @@ app.use(function(req, res, next) {
       next();
   }
 });
+*/
 
 app.set('port', port);
 app.set('address', config.server.address || '0.0.0.0');
