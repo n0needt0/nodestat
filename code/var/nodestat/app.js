@@ -15,6 +15,8 @@ var express = require('express')
 
 var numCPUs = require('os').cpus().length;
 
+debug("running on " +numCPUs + " CPU(s)")
+
 var config = settings.config;
 
 console.log(config);
