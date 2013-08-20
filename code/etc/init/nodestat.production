@@ -15,7 +15,7 @@ script
     # Not sure why $HOME is needed, but we found that it is:
     export HOME="/root"
 
-    exec /usr/local/bin/node /var/www/nodestat.production/app.js >> /var/log/nodestat.log 2>&1
+    exec /usr/bin/node /var/www/nodestat.production/app.js >> /var/log/nodestat.log 2>&1
 end script
 
 pre-start script
