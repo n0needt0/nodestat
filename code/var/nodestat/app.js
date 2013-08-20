@@ -9,7 +9,7 @@ var express = require('express')
   , mongo = require('mongodb')
   , path = require('path')
   , fs = require("fs")
-  , settings = require(__dirname + '/settigs')
+  , settings = require(__dirname + '/settings')
   , toobusy = require('toobusy').maxLag(100)
   , cluster = require('cluster');
 
