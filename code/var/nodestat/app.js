@@ -13,6 +13,8 @@ var express = require('express')
   //, toobusy = require('toobusy').maxLag(100)
   , cluster = require('cluster');
 
+var debug = settings.debug;
+
 var numCPUs = require('os').cpus().length;
 
 debug("running on " +numCPUs + " CPU(s)")

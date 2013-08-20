@@ -121,6 +121,7 @@ namespace :deploy do
 
   desc "Start Node"
    task :reload_node do
+   sudo "stop nodestat"
    sudo "start nodestat"
   end
 
