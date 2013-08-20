@@ -13,12 +13,12 @@ mkdir -p $dirapp
 mkdir -p $dirdb;
 
 #zipt site
-zip -r $dirapp/$d-%APPLICATION%.zip /var/%APPLICATION%
+zip -r $dirapp/$d-%APPLICATION%.zip /var/www/%APPLICATION%
 #dump db
 
 rm -rf $dirdb/dump/*;
 
-mongodump --host localhost --port 27017 --db=statsdb --out = $dirdb/dump
+mongodump --host mongo.helppain.net:27017 --db statsdb --out $dirdb/dump
 
 zip -9 -r $dirdb/$d-%APPLICATION%.mongo.zip $dirdb/dump
 

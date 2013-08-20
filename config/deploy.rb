@@ -85,6 +85,24 @@ namespace :deploy do
     run "for f in $( ls -t #{deploy_to}/releases | tail -n +10 ); do  rm -rf #{deploy_to}/releases/$f;  done"
   end
   
+  desc "write backup job"
+    task :make_backup_job do
+    run "sed -i \"s/%APPLICATION%/#{application}/g\" #{deploy_to}/current/code/backup/bin/db.sh"
+    unless remote_file_exists?("/var/backup")
+      sudo "mkdir -p /var/backup"
+    end
+    
+    unless remote_file_exists?("/var/backup/bin")
+      sudo "ln -s #{deploy_to}/current/code/backup/bin /var/backup/bin"
+    end
+  end
+  
+  desc "set crontab"
+  task :set_crontab do
+    sudo "bash /var/backup/bin/setupcron.sh"
+  end
+  
+  
   desc "get correct config"
   task :get_correct_config do
     run "mv #{deploy_to}/current/code/var/nodestat/settings.#{stage} #{deploy_to}/current/code/var/nodestat/settings.json"
@@ -144,6 +162,9 @@ after 'deploy', 'deploy:publish_revision'
 
 #remove old code
 after 'deploy', 'deploy:remove_old'
+
+after 'deploy', 'deploy:make_backup_job'
+after 'deploy', 'deploy:set_crontab'
 
 #change permission to www-data user
 after 'deploy', 'deploy:chown_to_www_data'
