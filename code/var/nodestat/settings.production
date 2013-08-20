@@ -17,7 +17,7 @@
         "allowMethods": "GET,POST"
     },
     "logger":{
-        "logfile":"/var/log/node/nodestat"
+        "logfile":"/var/log/nodestat_log"
     },
     "validator":{
         "locations":["san mateo","salinas", "fresno", "total"]
